@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            yamlFile 'k8s/k8sPodTemplate.yaml'
+            yamlFile 'k8sPodTemplate.yaml'
         }
     }
 
