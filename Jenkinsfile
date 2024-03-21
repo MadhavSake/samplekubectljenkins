@@ -12,7 +12,7 @@ pipeline {
         credentials(name: 'CFN_CREDENTIALS_ID', defaultValue: '', description: 'AWS Account Role.', required: true)
         choice(
             name: 'REGION',
-            choices: ['us-east-1', 'us-east-2'],
+            choices: ['eu-central-1'],
             description: 'AWS Account Region'
         )
         choice(
@@ -32,10 +32,10 @@ pipeline {
             steps {
                 script {
                     // Log in to ECR
-                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                    sh "aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 106036894611.dkr.ecr.eu-central-1.amazonaws.com"
 
                     // Pull Docker image from ECR
-                    sh "docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker pull 106036894611.dkr.ecr.eu-central-1.amazonaws.com/eureka-server:latest"
                 }
             }
         }
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Apply Kubernetes manifests
-                    sh "kubectl apply -f path/to/kubernetes/manifests"
+                    sh "kubectl apply -f deployment.yaml"
                 }
             }
         }
