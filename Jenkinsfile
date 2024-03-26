@@ -1,30 +1,33 @@
 pipeline {
-    agent {
-        kubernetes {
-            yamlFile 'k8sPodTemplate.yaml'
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', 
+                          branches: [[name: '*/main']],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [[$class: 'SparseCheckoutPaths',  sparseCheckoutPaths: [[path: 'k8sPodTemplate.yaml']]]],
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[url: 'https://github.com/MadhavSake/jenkins-cloudformation-deployment-example.git']]])
+            }
+        }
+        stage('Build') {
+            steps {
+                // Add your build steps here
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Add your deployment steps here
+            }
         }
     }
-
-    stages {
-        stage('Pull Docker Image') {
-            steps {
-                script {
-                    // Log in to ECR
-                    sh "aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 106036894611.dkr.ecr.eu-central-1.amazonaws.com"
-
-                    // Pull Docker image from ECR
-                    sh "docker pull 106036894611.dkr.ecr.eu-central-1.amazonaws.com/eureka-server:latest"
-                }
-            }
-        }
-
-        stage('Deploy to EKS Cluster') {
-            steps {
-                script {
-                    // Apply Kubernetes manifests
-                    sh "kubectl apply -f deployment.yaml"
-                }
-            }
+    
+    post {
+        failure {
+            echo 'Pipeline failed, sending notification...'
+            // Add notification steps here
         }
     }
 }
